@@ -1,0 +1,7 @@
+@media screen
+{
+	.olympic {display: none;}
+
+	div.cassandras-veil {position: absolute; background-color:#000; opacity:0.7; -moz-opacity: 0.8; filter: alpha(opacity = 80); -khtml-opacity: 0.8;}
+	div.cassandras-veil img {position: absolute; top: 50%; left: 50%; margin-top: -14px; margin-left: -14px;}
+}
