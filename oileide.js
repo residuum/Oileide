@@ -22,7 +22,7 @@
 			} else {
 				for (i = 0; i < MsXmlHttpVersions.length; i += 1) {
 					try {
-						xmlHttp  = new MsXmlHttpVersions[i];
+						xmlHttp  = new MsXmlHttpVersions[i]();
 						break;
 					} catch (e) {}
 				}
@@ -102,7 +102,9 @@
 		 * @param {string} content content to write into DOM element
 		 * */
 		self.writeHtml = function (elementId, content) {
-			var element = document.getElementById(elementId);
+			var element = document.getElementById(elementId),
+				start,
+				end;
 			if (element) {
 				//var currentNodes = element.childNodes
 				//for (var i=0; i++; i<currentNodes.length) {
@@ -112,10 +114,10 @@
 				//	}
 				//}
 				//TODO: Replace with real DOM
-				var x = content.indexOf("<body");
-				x = content.indexOf(">", x);
-				var y = content.lastIndexOf("</body>");
-				content = content.slice(x + 1, y);
+				start = content.indexOf("<body");
+				start = content.indexOf(">", start);
+				end = content.lastIndexOf("</body>");
+				content = content.slice(start + 1, end);
 				element.innerHTML = content;
 				if (autoMode === true) {
 					self.launchJavelin(element);
@@ -170,10 +172,12 @@
 		 * @param {string} elementId ID of element to show overlay over it
 		 * */
 		self.showVeil = function (elementId) {
-			var element = document.getElementById(elementId);
+			var element = document.getElementById(elementId),
+				veil,
+				offset;
 			if (element !== null) {
-				var veil = cassandrasVeil.cloneNode(true),
-					offset = self.findPos(element);
+				veil = cassandrasVeil.cloneNode(true);
+				offset = self.findPos(element);
 				veil.style.left = offset[0];
 				veil.style.top = offset[1];
 				veil.style.width = element.offsetWidth + 'px';
