@@ -184,7 +184,7 @@
 		};
 
 		/**
-		 * returns position of DOM element
+		 * finds position of DOM element
 		 *
 		 * @param {object} element DOM element to get position
 		 * @return x and y position of element, until parent is positioned and height and width of element
@@ -194,19 +194,36 @@
 			var curleft = 0,
 				curtop = 0,
 				width = '100%',
-				height = '100%';
+				height = '100%',
+				positioning;
 			if (element.offsetParent) {
 				width = element.offsetWidth + 'px';
 				height = element.offsetHeight + 'px';
 				do {
-					if (element.style.position === 'relative' || element.style.position === 'absolute' || element.style.position === 'fixed') {
+					positioning = self.getPositioningOfElement(element);
+					if (positioning === 'relative' || positioning === 'absolute' || positioning === 'fixed') {
 						break;
 					}
 					curleft += element.offsetLeft;
 					curtop += element.offsetTop;
 				} while (element = element.offsetParent);
 			}
+			curleft += 'px';
+			curtop += 'px';
 			return [curleft, curtop, width, height];
+		};
+
+		/**
+		 * gets position CSS property of element
+		 * */
+		self.getPositioningOfElement = function (element) {
+			if (element.currentStyle) { // IE
+				return element.currentStyle.position;
+			} else if (document.defaultView) { // Gecko
+				return document.defaultView.getComputedStyle(element, '').getPropertyValue('position');
+			} else { // something
+				return element.style.position;
+			}
 		};
 
 
