@@ -46,7 +46,7 @@
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {string} elementId ID of DOM element to give to callback function along with the return data of the Ajax request, defaults to null
 		 *
-		 * @return status for NOT successful loading
+		 * @return status for successful loading
 		 * @type boolean
 		 * */
 		self.loadHtml = function (url, callbackFunction, asynchronous, requestMethod, postData, elementId) {
@@ -67,14 +67,9 @@
 			if (xmlHttp !== null) {
 				if (asynchronous === true) {
 					xmlHttp.onreadystatechange = function () {
-						if (xmlHttp.readyState === 4) {
-							if (xmlHttp.status === 200 || xmlHttp.status === 304) {
-								bodyContent = xmlHttp.responseText;
-								callbackFunction(elementId, bodyContent);
-								return false;
-							} else {
-								return true;
-							}
+						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
+							bodyContent = xmlHttp.responseText;
+							callbackFunction(elementId, bodyContent);
 						}
 					};
 				}
@@ -84,14 +79,15 @@
 					if (xmlHttp.status === 200 || xmlHttp.status === 304) {
 						bodyContent = xmlHttp.responseText;
 						callbackFunction(elementId, bodyContent);
-						return false;
-					} else {
 						return true;
+					} else {
+						return false;
 					}
-
+				} else {
+					return true;
 				}
 			} else {
-				return true;
+				return false;
 			}
 		};
 
@@ -135,7 +131,7 @@
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {string} callBackFunction function to execute after html is loaded
 		 *
-		 * @return status of NOT successfully loaded HTML
+		 * @return status of successfully loaded HTML
 		 * @type boolean
 		 * */
 		self.insertHtml = function (url, elementId, asynchronous, requestMethod, postData) {
@@ -148,7 +144,7 @@
 		 * @param {object} aElement anchor element which was clicked
 		 * @param {boolean} appendToLocation indicates whether to add element ID to hash
 		 *
-		 * @return status of NOT successfully inserted href
+		 * @return status of successfully inserted href
 		 * @type boolean
 		 * */
 		self.autoInsert = function (aElement, appendToLocation) {
@@ -156,7 +152,7 @@
 				stringToAppend = aElement.getAttribute('id'),
 				matches = autoRegex.exec(aElement.rel),
 				elementId = matches[1],
-				status = true;
+				status = false;
 
 			self.showVeil(elementId);
 			status = self.insertHtml(url, elementId, appendToLocation);
@@ -174,14 +170,14 @@
 		self.showVeil = function (elementId) {
 			var element = document.getElementById(elementId),
 				veil,
-				offset;
+				position;
 			if (element !== null) {
 				veil = cassandrasVeil.cloneNode(true);
-				offset = self.findPos(element);
-				veil.style.left = offset[0];
-				veil.style.top = offset[1];
-				veil.style.width = element.offsetWidth + 'px';
-				veil.style.height = element.offsetHeight + 'px';
+				position = self.findPos(element);
+				veil.style.left = position[0];
+				veil.style.top = position[1];
+				veil.style.width = position[2];
+				veil.style.height = position[3];
 				veil.style.display = 'block';
 				element.appendChild(veil);
 			}
@@ -191,19 +187,26 @@
 		 * returns position of DOM element
 		 *
 		 * @param {object} element DOM element to get position
-		 * @return x and y position of element
+		 * @return x and y position of element, until parent is positioned and height and width of element
 		 * @type array
 		 * */
 		self.findPos = function (element) {
 			var curleft = 0,
-				curtop = 0;
+				curtop = 0,
+				width = '100%',
+				height = '100%';
 			if (element.offsetParent) {
+				width = element.offsetWidth + 'px';
+				height = element.offsetHeight + 'px';
 				do {
+					if (element.style.position === 'relative' || element.style.position === 'absolute' || element.style.position === 'fixed') {
+						break;
+					}
 					curleft += element.offsetLeft;
 					curtop += element.offsetTop;
 				} while (element = element.offsetParent);
 			}
-			return [curleft, curtop];
+			return [curleft, curtop, width, height];
 		};
 
 
@@ -224,8 +227,13 @@
 			for (i = 0; i < aElements.length; i += 1) {
 				if (autoRegex.test(aElements[i].rel)) {
 					aElements[i].onclick = function () {
-						window.oileide.autoInsert(this, true);
-						return false;
+						var status = window.oileide.autoInsert(this, true);
+						if (status === true) {
+							return false;
+						} else {
+							// On error follow link
+							return true;
+						}
 					};
 				}
 			}
