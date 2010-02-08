@@ -22,9 +22,10 @@
 			} else {
 				for (i = 0; i < MsXmlHttpVersions.length; i += 1) {
 					try {
-						xmlHttp  = new MsXmlHttpVersions[i]();
+						xmlHttp  = new ActiveXObject(MsXmlHttpVersions[i]);
 						break;
-					} catch (e) {}
+					} catch (e) {
+					}
 				}
 			}
 			return xmlHttp;
@@ -298,7 +299,7 @@
 			var loadingImage = document.createElement('img');
 			loadingImage.src = 'loading.gif';
 			cassandrasVeil.appendChild(loadingImage);
-		}
+		};
 
 		/**
 		 * switches to automode
@@ -311,7 +312,44 @@
 			self.readFromLocation();
 		};
 
+		/**
+		 * try to find auto mode switch in sourcecode
+		 * */
+		self.getParam = function () {
+			var scriptTags = document.getElementsByTagName("head")[0].getElementsByTagName("script"),
+				i,
+				path;
+			for (i = 0; i < scriptTags.length; i += 1) {
+				// make some educated guess
+				path = scriptTags[i].src;
+				if (path.match(/(^|\/)oileide\.js\?auto$/)) {
+					self.run();
+				}
+			}
+		};
+
 		return self;
 	};
 	window.oileide = oileide();
+
+	/**
+	 * Add parameter search to onload
+	 * */
+	if (window.addEventListener) {
+		window.addEventListener('load', function () {
+			window.oileide.getParam();
+		}, false);
+	} else if (window.attachEvent) {
+		window.attachEvent('onload', function () {
+			window.oileide.getParam();
+		});
+	} else if (typeof window.onload === 'undefined') {
+		window.onload = function () {
+			window.oileide.getParam();
+		};
+	} else {
+		window.onload = window.onload && function () {
+			window.oileide.getParam();
+		};
+	}
 }());
