@@ -16,11 +16,13 @@
 		self.sail = function () {
 			var xmlHttp = null,
 				MsXmlHttpVersions = ['MSXML2.XMLHTTP.6.0', 'MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'],
-				i;
+				i,
+				len;
 			if (window.XMLHttpRequest) {
 				xmlHttp = new XMLHttpRequest();
 			} else {
-				for (i = 0; i < MsXmlHttpVersions.length; i += 1) {
+				len = MsXmlHttpVersions.length;
+				for (i = 0; i < len; i += 1) {
 					try {
 						xmlHttp  = new ActiveXObject(MsXmlHttpVersions[i]);
 						break;
@@ -35,6 +37,7 @@
 		 * loads json object via Ajax
 		 * */
 		self.loadJson = function () {
+			throw ("not yet implemented");
 		};
 
 		/**
@@ -117,7 +120,7 @@
 				content = content.slice(start + 1, end);
 				element.innerHTML = content;
 				if (autoMode === true) {
-					self.launchJavelin(element);
+					self.launchSpear(element);
 				}
 			}
 		};
@@ -174,7 +177,7 @@
 				position;
 			if (element !== null) {
 				veil = cassandrasVeil.cloneNode(true);
-				position = self.findPos(element);
+				position = self.getElementPosition(element);
 				veil.style.left = position[0];
 				veil.style.top = position[1];
 				veil.style.width = position[2];
@@ -191,7 +194,7 @@
 		 * @return x and y position of element, until parent is positioned and height and width of element
 		 * @type array
 		 * */
-		self.findPos = function (element) {
+		self.getElementPosition = function (element) {
 			var curleft = 0,
 				curtop = 0,
 				width = '100%',
@@ -201,7 +204,7 @@
 				width = element.offsetWidth + 'px';
 				height = element.offsetHeight + 'px';
 				do {
-					positioning = self.getPositioningOfElement(element);
+					positioning = self.getElementPositioning(element);
 					if (positioning === 'relative' || positioning === 'absolute' || positioning === 'fixed') {
 						break;
 					}
@@ -217,7 +220,7 @@
 		/**
 		 * gets position CSS property of element
 		 * */
-		self.getPositioningOfElement = function (element) {
+		self.getElementPositioning = function (element) {
 			if (element.currentStyle) { // IE
 				return element.currentStyle.position;
 			} else if (document.defaultView) { // Gecko
@@ -232,6 +235,7 @@
 		 * loads xml document via Ajax
 		 * */
 		self.loadXml = function () {
+			throw ("not yet implemented");
 		};
 
 		/**
@@ -239,10 +243,11 @@
 		 *
 		 * @param {object} node DOM node to parse for anchor elements
 		 * */
-		self.launchJavelin = function (node) {
+		self.launchSpear = function (node) {
 			var aElements = node.getElementsByTagName("a"),
-				i;
-			for (i = 0; i < aElements.length; i += 1) {
+				i,
+				len;
+			for (i = 0, len = aElements.length; i < len; i += 1) {
 				if (autoRegex.test(aElements[i].rel)) {
 					aElements[i].onclick = function () {
 						var status = window.oileide.autoInsert(this, true);
@@ -276,8 +281,9 @@
 		self.readFromLocation = function () {
 			var clickedLinkIds = window.location.hash.substr(1).split(','),
 				i,
-				aElement;
-			for (i = 0; i < clickedLinkIds.length; i += 1) {
+				aElement,
+				len;
+			for (i = 0, len = clickedLinkIds.length; i < len; i += 1) {
 				aElement = document.getElementById(clickedLinkIds[i]);
 				if (aElement !== null) {
 					/*if (timeout !== undefined && timeout > 0) {
@@ -308,7 +314,7 @@
 			autoMode = true;
 			self.createCassandrasVeil();
 			var bodyNode = document.getElementsByTagName("body");
-			self.launchJavelin(bodyNode[0]);
+			self.launchSpear(bodyNode[0]);
 			self.readFromLocation();
 		};
 
@@ -318,8 +324,9 @@
 		self.getParam = function () {
 			var scriptTags = document.getElementsByTagName("head")[0].getElementsByTagName("script"),
 				i,
-				path;
-			for (i = 0; i < scriptTags.length; i += 1) {
+				path,
+				len;
+			for (i = 0, len = scriptTags.length; i < len; i += 1) {
 				// make some educated guess
 				path = scriptTags[i].src;
 				if (path.match(/(^|\/)oileide\.js\?auto$/)) {
