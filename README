@@ -1,0 +1,83 @@
+About Oileide
+
+Oileide is a small AJAX library with the following features:
+
+- unobtrusive: Only the window.oileide object is created, all methods
+  are methods of this exposed object
+
+- auto mode: With the right HTML markup, links are automatically
+  transformed to load HTML via an AJAX request and load the content
+  of the request into an element on the page. An overlay is added
+  automatically to indicate loading, and if the browsers fails to
+  complete the AJAX request, either because of no support for that or
+  non-available Javascript, the link still points to the desired content.
+  Headers and footers can still be in the markup of the page and will not
+  be shown on the ajaxified page itself. Even bookmarking of the page
+  with ajaxified content is possible, because Oileide uses the location
+  of the browser to store this information.
+
+- All the rest is standard for AJAX libraries: Get HTML/XML/JSON via
+  synchronous / asynchronous requests and doing callback functions,
+  although not everything is implemented yet.
+
+- One main goal is to be a small library.
+
+How Auto Mode Works
+
+- reference the file in the <head> of the (X)HTML document via
+  <script src="oileide.js?auto"></script> to trigger auto mode or
+  include onload="window.oileide.run()" in the body tag, in case of
+  renaming the file.
+
+- You should also include <link rel="stylesheet" href="oileide.css"
+  type="text/css" /> to use the "even more better" functions of auto mode.
+
+- Links that should be ajaxified need the following attributes:
+  * id: The content of this attribute will be appended to the location
+        after the hash (#), in case of more than one clicked link, the
+        IDs will be in a comma separated list
+  * href: The link to the site to be loaded via AJAX. Only GET method
+          is implemented, any ideas on how to implement POST are welcome
+  * rel: This is the trigger, and is used in the form
+         rel="oileide[elementId]", where elementId is the ID of the
+         element whose content will be replaced by the AJAX content.
+
+  Here is an example:
+      <p id="my-content"></p><a href="test.html"
+          rel="oileide[my-content]" id="mylink">Click Me</a>
+
+      Clicking this link will add #mylink to the location in the browser,
+      and load the body content of test.html into the <p> with
+      id="my-content"
+
+- Should you load the page with anchors in auto mode, all AJAX requests
+  will be made in the same sequence as indicated via the location, although
+  for reasons stated in the "even more better" functions synchronous. So
+
+- But there's even more:
+  * the element that will hold the ajaxified content will
+    be overlayed by a div and a loading gif to indicate the load in the
+    background.
+  * Any element with the class "olympic" on the loaded HTML file (in the
+    example test.html) will not be displayed on the original page, so
+    you can include header / footer for navigation and overall look and
+    feel on the page for the non-Javascript browsers and still load the
+    same page via AJAX. Graceful degradation ain't sh*t to Oileide.
+  * Content that is loaded via auto mode will be parsed automatically
+    for <a> tags with the right markup to ajaxify them as well. That is
+    the reason to make the calls after reload synchronous, to be sure that
+    the links are already on the page.
+
+- Last, but not least: Where does the name come from?
+  In the Trojan War, there were two Greek heroes named Ajax, Ajax from
+  Telemon, called the Great, and Ajax the Lesser, king of Locris. The
+  latter was the son of Oileus, therefore yielding the cognomen Oileide.
+  So Oileide is Ajax the Lesser. Some more mythology about him: Ajax
+  the Lesser was a fast runner, only second to Achilleus, and beaten by
+  Odysseus on Achilleus funeral, because Athena tripped him. He was also
+  renowned for his expertise with the spear, and raped Cassandra during
+  the sack of Troy (That is why the overlays over the divs have the class
+  "cassandras-veil"). And because several Olympic gods took part invisibly
+  in the Trojan War on both sides, the hidden elements have the class
+  "olympic".
+  More: http://en.wikipedia.org/wiki/Ajax_the_lesser
