@@ -181,13 +181,13 @@
 		self.autoInsert = function (aElement, appendToLocation) {
 			var url = aElement.getAttribute('href'),
 				stringToAppend = aElement.getAttribute('id'),
-				matches = autoRegex.exec(aElement.rel),
+				matches = autoRegex.exec(aElement.getAttribute('rel')),
 				elementId = matches[1],
 				status = false;
 
 			self.showVeil(elementId);
 			status = self.insertHtml(url, elementId, appendToLocation);
-			if (appendToLocation === true) {
+			if (appendToLocation === true && stringToAppend !== null) {
 				self.appendToLocation(stringToAppend);
 			}
 			return status;
