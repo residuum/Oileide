@@ -130,6 +130,7 @@
 		 * */
 		self.writeHtml = function (elementId, content) {
 			var element = document.getElementById(elementId),
+				tempDomEl,
 				start,
 				end;
 			if (element) {
@@ -145,7 +146,14 @@
 				start = content.indexOf(">", start);
 				end = content.lastIndexOf("</body>");
 				content = content.slice(start + 1, end);
-				element.innerHTML = content;
+
+				//Workaround for real DOM pt.2: Create div and remove olympics
+				tempDomEl = document.createElement('div');
+				tempDomEl.innerHTML = content;
+				tempDomEl = self.removeOlympics(tempDomEl);
+
+				element.innerHTML = tempDomEl.innerHTML;
+
 				if (autoMode === true) {
 					self.launchSpear(element);
 				}
@@ -274,9 +282,6 @@
 			var aElements = node.getElementsByTagName("a"),
 				i,
 				len;
-			if (node.nodeName !== "BODY") {
-				self.removeOlympics(node);
-			}
 			for (i = 0, len = aElements.length; i < len; i += 1) {
 				if (autoRegex.test(aElements[i].rel)) {
 					aElements[i].onclick = function () {
@@ -300,23 +305,23 @@
 		self.removeOlympics = function (node) {
 			var olympics,
 				i,
-				len,
 				classes;
 			if (node.getElementsByClassName === undefined) {
 				// http://javascript.about.com/library/bldom08.htm
 				olympics = node.getElementsByTagName('*');
-				for (i = 0, len = olympics.length; i < len; i += 1) {
+				for (i = olympics.length - 1; i >= 0; i -= 1) {
 					classes = olympics[i].className;
 					if (/\bolympic\b/.test(classes) === true) {
-						node.removeChild(olympics[i]);
+						olympics[i].parentNode.removeChild(olympics[i]);
 					}
 				}
 			} else {
 				olympics = node.getElementsByClassName("olympic");
-				for (i = 0, len = olympics.length; i < len; i += 1) {
-					node.removeChild(olympics[i]);
+				for (i = olympics.length - 1; i >= 0; i -= 1) {
+					olympics[i].parentNode.removeChild(olympics[i]);
 				}
 			}
+			return node;
 		};
 
 		/**
