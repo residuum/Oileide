@@ -169,7 +169,7 @@
 		 * @type object
 		 * */
 		self.getBodyFromHtml = function (htmlString) {
-			var tempEl,
+			var tempDomEl,
 				start,
 				end;
 			start = htmlString.indexOf("<body");
@@ -198,7 +198,7 @@
 				content = self.removeOlympics(content);
 				// Remove old child nodes
 				currentNodes = element.childNodes;
-				for (i = currentNodes.length - 1; i >=0 ; i -= 1) {
+				for (i = currentNodes.length - 1; i >= 0 ; i -= 1) {
 					currentNode = currentNodes[i];
 					if (currentNode.nodeType === 1 || currentNode.nodeType === 3) {
 						element.removeChild(currentNode);
