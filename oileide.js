@@ -68,7 +68,7 @@
 		};
 
 		/**
-		 * loads html document and returns its body via Ajax
+		 * loads XML document and executed callback function via Ajax
 		 *
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} callBackFunction function to execute after html is loaded
@@ -76,11 +76,12 @@
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {string} elementId ID of DOM element to give to callback function along with the return data of the Ajax request, defaults to null
+		 * @param {boolean} isHtml whether to load HTML and use body content or XML and use whole content
 		 *
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadHtml = function (url, callbackFunction, asynchronous, requestMethod, postData, elementId) {
+		self.loadXml = function (url, callbackFunction, asynchronous, requestMethod, postData, elementId, isHtml) {
 			if (asynchronous === undefined) {
 				asynchronous = true;
 			}
@@ -93,13 +94,25 @@
 			if (elementId === undefined) {
 				elementId = null;
 			}
+			if (isHtml === undefined) {
+				isHtml = false;
+			}
 			var xmlHttp = self.sail(),
 				bodyContent;
 			if (xmlHttp !== null) {
 				if (asynchronous === true) {
 					xmlHttp.onreadystatechange = function () {
 						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
-							bodyContent = xmlHttp.responseText;
+							if (isHtml === true) {
+								if (xmlHttp.responseXML !== null) {
+									//bodyContent, if (X)HTML as XML
+									bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0];
+								} else {
+									bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
+								}
+							} else {
+								bodyContent = xmlHttp.responseXML;
+							}
 							callbackFunction(elementId, bodyContent);
 						}
 					};
@@ -108,7 +121,16 @@
 				xmlHttp.send(postData);
 				if (asynchronous === false) {
 					if (xmlHttp.status === 200 || xmlHttp.status === 304) {
-						bodyContent = xmlHttp.responseText;
+						if (isHtml === true) {
+							if (xmlHttp.responseXML !== null) {
+								//bodyContent, if (X)HTML as XML
+								bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0];
+							} else {
+								bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
+							}
+						} else {
+							bodyContent = xmlHttp.responseXML;
+						}
 						callbackFunction(elementId, bodyContent);
 						return true;
 					} else {
@@ -123,37 +145,73 @@
 		};
 
 		/**
+		 * loads HTML document and executes callback function via Ajax
+		 *
+		 * @param {string} url URL to load via ajax request
+		 * @param {string} callBackFunction function to execute after html is loaded
+		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
+		 * @param {string} postData postData to send via Ajax, defaults to null
+		 * @param {string} elementId ID of DOM element to give to callback function along with the return data of the Ajax request, defaults to null
+		 *
+		 * @return status for successful loading
+		 * @type boolean
+		 * */
+		self.loadHtml = function (url, callbackFunction, asynchronous, requestMethod, postData, elementId) {
+			return self.loadXml(url, callbackFunction, asynchronous, requestMethod, postData, elementId, true);
+		};
+
+		/**
+		 * gets body from HTML string
+		 * @param {string} htmlString HTML file as string
+		 *
+		 * @return DOM object of content of <body> tag
+		 * @type object
+		 * */
+		self.getBodyFromHtml = function (htmlString) {
+			var tempEl,
+				start,
+				end;
+			start = htmlString.indexOf("<body");
+			start = htmlString.indexOf(">", start);
+			end = htmlString.lastIndexOf("</body>");
+			htmlString = htmlString.slice(start + 1, end);
+			//Workaround for real DOM: Create div
+			tempDomEl = document.createElement('div');
+			tempDomEl.innerHTML = htmlString;
+			return tempDomEl;
+		};
+
+		/**
 		 * writes HTML into a DOM element
 		 *
 		 * @param {string} elementId ID of the DOM element to write to
-		 * @param {string} content content to write into DOM element
+		 * @param {object} content DOM element to put into element with ID elementId
 		 * */
 		self.writeHtml = function (elementId, content) {
 			var element = document.getElementById(elementId),
-				tempDomEl,
-				start,
-				end;
+				currentNodes,
+				currentNode,
+				i,
+				len;
 			if (element) {
-				//var currentNodes = element.childNodes
-				//for (var i=0; i++; i<currentNodes.length) {
-				//	var currentNode = currentNodes[i];
-				//	if (currentNodes[i].nodeType == 1 || currentNodes[i].nodeType == 3) {
-				//		element.removeChild(currentNodes[i]);
-				//	}
-				//}
-				//TODO: Replace with real DOM
-				start = content.indexOf("<body");
-				start = content.indexOf(">", start);
-				end = content.lastIndexOf("</body>");
-				content = content.slice(start + 1, end);
-
-				//Workaround for real DOM pt.2: Create div and remove olympics
-				tempDomEl = document.createElement('div');
-				tempDomEl.innerHTML = content;
-				tempDomEl = self.removeOlympics(tempDomEl);
-
-				element.innerHTML = tempDomEl.innerHTML;
-
+				content = self.removeOlympics(content);
+				// Remove old child nodes
+				currentNodes = element.childNodes;
+				for (i = currentNodes.length - 1; i >=0 ; i -= 1) {
+					currentNode = currentNodes[i];
+					if (currentNode.nodeType === 1 || currentNode.nodeType === 3) {
+						element.removeChild(currentNode);
+					}
+				}
+				// Insert new child nodes
+				currentNodes = content.childNodes;
+				for (i = 0, len = currentNodes.length; i < len; i += 1) {
+					currentNode = currentNodes[i].cloneNode(true);
+					if (currentNode.nodeType === 1 || currentNode.nodeType === 3) {
+						element.appendChild(currentNode);
+					}
+				}
 				if (autoMode === true) {
 					self.launchSpear(element);
 				}
@@ -226,6 +284,7 @@
 		 * finds position of DOM element
 		 *
 		 * @param {object} element DOM element to get position
+		 *
 		 * @return x and y position of element, until parent is positioned and height and width of element
 		 * @type array
 		 * */
@@ -253,24 +312,21 @@
 		};
 
 		/**
-		 * gets position CSS property of element
+		 * gets computed position CSS property of element
+		 *
+		 * @param {object} element DOM element to get position property
+		 *
+		 * @return computed positioning of element
+		 * @type string
 		 * */
 		self.getElementPositioning = function (element) {
 			if (element.currentStyle) { // IE
 				return element.currentStyle.position;
 			} else if (document.defaultView) { // Gecko
 				return document.defaultView.getComputedStyle(element, '').getPropertyValue('position');
-			} else { // something
+			} else { // at least something
 				return element.style.position;
 			}
-		};
-
-
-		/**
-		 * loads xml document via Ajax
-		 * */
-		self.loadXml = function () {
-			throw ("not yet implemented");
 		};
 
 		/**
