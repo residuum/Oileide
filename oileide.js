@@ -28,10 +28,9 @@
 (function () {
 	var oileide = function () {
 		var self = {},
-		// For Demo only
-			timeout = 200,
+			timeout = 200, // For Demo only
 			autoMode = false,
-			autoRegex = /^oileide\[([a-zA-Z 0-9\-_]*)\]$/,
+			autoRegex = /^oileide\[([a-zA-Z 0-9\-_]*)\]$/, // regex for rel attribute
 			cassandrasVeil = null;
 
 		/**
@@ -42,12 +41,13 @@
 		 * */
 		self.sail = function () {
 			var xmlHttp = null,
-				MsXmlHttpVersions = ['MSXML2.XMLHTTP.6.0', 'MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'],
+				MsXmlHttpVersions = ['MSXML2.XMLHTTP.6.0', 'MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'], // different versions of ms xmlhttp
 				i,
 				len;
 			if (window.XMLHttpRequest) {
 				xmlHttp = new XMLHttpRequest();
 			} else {
+				// try one ms xmlhttp after another
 				len = MsXmlHttpVersions.length;
 				for (i = 0; i < len; i += 1) {
 					try {
@@ -98,14 +98,14 @@
 				isHtml = false;
 			}
 			var xmlHttp = self.sail(),
-				bodyContent;
+				bodyContent; // DOM node
 			if (xmlHttp !== null) {
 				if (asynchronous === true) {
 					xmlHttp.onreadystatechange = function () {
 						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
 							if (isHtml === true) {
 								if (xmlHttp.responseXML !== null) {
-									//bodyContent, if (X)HTML as XML
+									// if (X)HTML as XML
 									bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0];
 								} else {
 									bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
@@ -123,7 +123,7 @@
 					if (xmlHttp.status === 200 || xmlHttp.status === 304) {
 						if (isHtml === true) {
 							if (xmlHttp.responseXML !== null) {
-								//bodyContent, if (X)HTML as XML
+								// if (X)HTML as XML
 								bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0];
 							} else {
 								bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
@@ -172,11 +172,12 @@
 			var tempDomEl,
 				start,
 				end;
+			// get everything between <body ...> and </body>
 			start = htmlString.indexOf("<body");
 			start = htmlString.indexOf(">", start);
 			end = htmlString.lastIndexOf("</body>");
 			htmlString = htmlString.slice(start + 1, end);
-			//Workaround for real DOM: Create div
+			// Workaround for real DOM: Create div and use innerHTML
 			tempDomEl = document.createElement('div');
 			tempDomEl.innerHTML = htmlString;
 			return tempDomEl;
@@ -207,7 +208,7 @@
 				// Insert new child nodes
 				currentNodes = content.childNodes;
 				for (i = 0, len = currentNodes.length; i < len; i += 1) {
-					currentNode = currentNodes[i].cloneNode(true);
+					currentNode = currentNodes[i].cloneNode(true); // clone nodes to not remove currentNode from currentNodes during insertion
 					if (currentNode.nodeType === 1 || currentNode.nodeType === 3) {
 						element.appendChild(currentNode);
 					}
@@ -289,7 +290,7 @@
 		 * @type array
 		 * */
 		self.getElementPosition = function (element) {
-			var curleft = 0,
+			var curleft = 0, // default values: overlay over whole page
 				curtop = 0,
 				width = '100%',
 				height = '100%',
@@ -300,7 +301,7 @@
 				do {
 					positioning = self.getElementPositioning(element);
 					if (positioning === 'relative' || positioning === 'absolute' || positioning === 'fixed') {
-						break;
+						break; // if element is not positioned statically, then top/left of overlay is computed from that element
 					}
 					curleft += element.offsetLeft;
 					curtop += element.offsetTop;
@@ -445,7 +446,7 @@
 				path,
 				len;
 			for (i = 0, len = scriptTags.length; i < len; i += 1) {
-				// make some educated guess
+				// search for <script src="(something with / at end or start plus)oileide?auto">
 				path = scriptTags[i].src;
 				if (path.match(/(^|\/)oileide\.js\?auto$/)) {
 					self.run();
