@@ -27,7 +27,11 @@
 
 (function () {
 	var oileide = function () {
-		var self = {},
+		// Configurables
+		var loadingImageFileName = 'loading.gif',
+			oileideAutoMode = /(^|\/)oileide\.js\?auto$/,
+		// End Configurables
+			self = {},
 			timeout = 200, // For Demo only
 			autoMode = false,
 			autoRegex = /^oileide\[([a-zA-Z 0-9\-_]*)\]$/, // regex for rel attribute
@@ -455,7 +459,7 @@
 			cassandrasVeil.className = 'cassandras-veil';
 			cassandrasVeil.style.display = 'none';
 			var loadingImage = document.createElement('img');
-			loadingImage.src = 'loading.gif';
+			loadingImage.src = loadingImageFileName;
 			cassandrasVeil.appendChild(loadingImage);
 		};
 
@@ -479,9 +483,8 @@
 				path,
 				len;
 			for (i = 0, len = scriptTags.length; i < len; i += 1) {
-				// search for <script src="(something with / at end or start plus)oileide?auto">
 				path = scriptTags[i].src;
-				if (path.match(/(^|\/)oileide\.js\?auto$/)) {
+				if (path.match(oileideAutoMode)) {
 					self.run();
 				}
 			}
