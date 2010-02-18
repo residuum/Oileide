@@ -98,8 +98,7 @@
 						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
 							switch (dataType) {
 							case 'HTML':
-								// if (X)HTML as XML or string
-								bodyContent = (xmlHttp.responseXML) ? xmlHttp.responseXML.getElementsByTagName('body')[0] : self.getBodyFromHtml(xmlHttp.responseText);
+								bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
 								callbackFunction(elementId, bodyContent);
 								break;
 							case 'XML':
@@ -121,7 +120,8 @@
 						switch (dataType) {
 						case 'HTML':
 							// if (X)HTML as XML or string
-							bodyContent = (xmlHttp.responseXML) ? xmlHttp.responseXML.getElementsByTagName('body')[0] : self.getBodyFromHtml(xmlHttp.responseText);callbackFunction(elementId, bodyContent);
+							bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
+							callbackFunction(elementId, bodyContent);
 							break;
 						case 'XML':
 							bodyContent = xmlHttp.responseXML;
@@ -286,7 +286,7 @@
 
 			self.showVeil(elementId);
 			status = self.insertHtml(url, elementId, appendToLocation);
-			if (appendToLocation === true && stringToAppend !== null) {
+			if (appendToLocation === true && stringToAppend) {
 				self.appendToLocation(stringToAppend);
 			}
 			return status;
