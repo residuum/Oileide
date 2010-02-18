@@ -99,10 +99,10 @@
 							switch (dataType) {
 							case 'HTML':
 								// if (X)HTML as XML or string
-								bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0] || self.getBodyFromHtml(xmlHttp.responseText);
+								bodyContent = (xmlHttp.responseXML) ? xmlHttp.responseXML.getElementsByTagName('body')[0] : self.getBodyFromHtml(xmlHttp.responseText);
 								callbackFunction(elementId, bodyContent);
 								break;
-							case 'XML': 
+							case 'XML':
 								bodyContent = xmlHttp.responseXML;
 								callbackFunction(bodyContent);
 								break;
@@ -121,10 +121,9 @@
 						switch (dataType) {
 						case 'HTML':
 							// if (X)HTML as XML or string
-							bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0] || self.getBodyFromHtml(xmlHttp.responseText);
-							callbackFunction(elementId, bodyContent);
+							bodyContent = (xmlHttp.responseXML) ? xmlHttp.responseXML.getElementsByTagName('body')[0] : self.getBodyFromHtml(xmlHttp.responseText);callbackFunction(elementId, bodyContent);
 							break;
-						case 'XML': 
+						case 'XML':
 							bodyContent = xmlHttp.responseXML;
 							callbackFunction(bodyContent);
 							break;
