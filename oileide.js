@@ -104,12 +104,8 @@
 					xmlHttp.onreadystatechange = function () {
 						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
 							if (isHtml === true) {
-								if (xmlHttp.responseXML !== null) {
-									// if (X)HTML as XML
-									bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0];
-								} else {
-									bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
-								}
+								// if (X)HTML as XML or string
+								bodyContent = (xmlHttp.responseXML !== null) ? (xmlHttp.responseXML.getElementsByTagName('body')[0] : self.getBodyFromHtml(xmlHttp.responseText);							
 							} else {
 								bodyContent = xmlHttp.responseXML;
 							}
@@ -122,12 +118,8 @@
 				if (asynchronous === false) {
 					if (xmlHttp.status === 200 || xmlHttp.status === 304) {
 						if (isHtml === true) {
-							if (xmlHttp.responseXML !== null) {
-								// if (X)HTML as XML
-								bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0];
-							} else {
-								bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
-							}
+							// if (X)HTML as XML or string
+							bodyContent = (xmlHttp.responseXML !== null) ? (xmlHttp.responseXML.getElementsByTagName('body')[0]: self.getBodyFromHtml(xmlHttp.responseText);
 						} else {
 							bodyContent = xmlHttp.responseXML;
 						}
@@ -305,7 +297,8 @@
 					}
 					curleft += element.offsetLeft;
 					curtop += element.offsetTop;
-				} while (element = element.offsetParent);
+					element = element.offsetParent
+				} while (element);
 			}
 			curleft += 'px';
 			curtop += 'px';
