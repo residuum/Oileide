@@ -23,7 +23,7 @@
 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 	THE SOFTWARE.
-* ----------------------------------------------------------------------------------- */
+ * ----------------------------------------------------------------------------------- */
 
 (function () {
 	var oileide = function () {
@@ -60,28 +60,32 @@
 			return xmlHttp;
 		};
 
+
 		/**
 		 * loads json object via Ajax
 		 * */
-		self.loadJson = function () {
-			throw ("not yet implemented");
+		self.loadJson = function (url, callbackFunction, asynchronous, requestMethod, postData) {
+			return self.callForAchilleus(url, callbackFunction, asynchronous, requestMethod, postData, 'JSON');
 		};
 
 		/**
-		 * loads XML document and executed callback function via Ajax
+		 * loads data and executed callback function via Ajax
 		 *
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} callBackFunction function to execute after html is loaded
 		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
-		 * @param {string} elementId ID of DOM element to give to callback function along with the return data of the Ajax request, defaults to null
-		 * @param {boolean} isHtml whether to load HTML and use body content or XML and use whole content
+		 * @param {string} dataType type of data to load via Ajax and hand over to callback function, either JSON, XML or HTML
+		 * @param {string} elementId ID of DOM element to give to callback function along with the return data of the Ajax request in case of HTML, defaults to null
 		 *
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadXml = function (url, callbackFunction, asynchronous, requestMethod, postData, elementId, isHtml) {
+		self.callForAchilleus = function (url, callbackFunction, asynchronous, requestMethod, postData, dataType, elementId) {
+			if (dataType !== 'JSON' && dataType !== 'XML' && dataType !== 'HTML') {
+				throw ('Unsupported Data Type');
+			}
 			if (asynchronous === undefined) {
 				asynchronous = true;
 			}
@@ -94,22 +98,27 @@
 			if (elementId === undefined) {
 				elementId = null;
 			}
-			if (isHtml === undefined) {
-				isHtml = false;
-			}
 			var xmlHttp = self.sail(),
 				bodyContent; // DOM node
 			if (xmlHttp !== null) {
 				if (asynchronous === true) {
 					xmlHttp.onreadystatechange = function () {
 						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
-							if (isHtml === true) {
+							switch (dataType) {
+							case 'HTML':
 								// if (X)HTML as XML or string
-								bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0] || self.getBodyFromHtml(xmlHttp.responseText);				
-							} else {
+								bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0] || self.getBodyFromHtml(xmlHttp.responseText);
+								callbackFunction(elementId, bodyContent);
+								break;
+							case 'XML': 
 								bodyContent = xmlHttp.responseXML;
+								callbackFunction(bodyContent);
+								break;
+							case 'JSON':
+								bodyContent = xmlHttp.responseText;
+								callbackFunction(bodyContent);
+								break;
 							}
-							callbackFunction(elementId, bodyContent);
 						}
 					};
 				}
@@ -117,13 +126,21 @@
 				xmlHttp.send(postData);
 				if (asynchronous === false) {
 					if (xmlHttp.status === 200 || xmlHttp.status === 304) {
-						if (isHtml === true) {
+						switch (dataType) {
+						case 'HTML':
 							// if (X)HTML as XML or string
 							bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0] || self.getBodyFromHtml(xmlHttp.responseText);
-						} else {
+							callbackFunction(elementId, bodyContent);
+							break;
+						case 'XML': 
 							bodyContent = xmlHttp.responseXML;
+							callbackFunction(bodyContent);
+							break;
+						case 'JSON':
+							bodyContent = xmlHttp.responseText;
+							callbackFunction(bodyContent);
+							break;
 						}
-						callbackFunction(elementId, bodyContent);
 						return true;
 					} else {
 						return false;
@@ -134,6 +151,38 @@
 			} else {
 				return false;
 			}
+		};
+
+		/**
+		 * loads JSON object and executed callback function via Ajax
+		 *
+		 * @param {string} url URL to load via ajax request
+		 * @param {string} callBackFunction function to execute after html is loaded
+		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
+		 * @param {string} postData postData to send via Ajax, defaults to null
+		 *
+		 * @return status for successful loading
+		 * @type boolean
+		 * */
+		self.loadJson = function (url, callbackFunction, asynchronous, requestMethod, postData) {
+			return self.callForAchilleus(url, callbackFunction, asynchronous, requestMethod, postData, 'JSON');
+		};
+
+		/**
+		 * loads XML document and executed callback function via Ajax
+		 *
+		 * @param {string} url URL to load via ajax request
+		 * @param {string} callBackFunction function to execute after html is loaded
+		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
+		 * @param {string} postData postData to send via Ajax, defaults to null
+		 *
+		 * @return status for successful loading
+		 * @type boolean
+		 * */
+		self.loadXml = function (url, callbackFunction, asynchronous, requestMethod, postData) {
+			return self.callForAchilleus(url, callbackFunction, asynchronous, requestMethod, postData, 'XML');
 		};
 
 		/**
@@ -150,7 +199,7 @@
 		 * @type boolean
 		 * */
 		self.loadHtml = function (url, callbackFunction, asynchronous, requestMethod, postData, elementId) {
-			return self.loadXml(url, callbackFunction, asynchronous, requestMethod, postData, elementId, true);
+			return self.callForAchilleus(url, callbackFunction, asynchronous, requestMethod, postData, 'HTML', elementId);
 		};
 
 		/**
@@ -297,7 +346,7 @@
 					}
 					curleft += element.offsetLeft;
 					curtop += element.offsetTop;
-					element = element.offsetParent
+					element = element.offsetParent;
 				} while (element);
 			}
 			curleft += 'px';
@@ -401,7 +450,7 @@
 					/*if (timeout !== undefined && timeout > 0) {
 						window.setTimeout(self.autoInsert(aElement, false), timeout);
 					} else {*/
-						self.autoInsert(aElement, false);
+					self.autoInsert(aElement, false);
 					//}
 				}
 			}
