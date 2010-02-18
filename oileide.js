@@ -60,14 +60,6 @@
 			return xmlHttp;
 		};
 
-
-		/**
-		 * loads json object via Ajax
-		 * */
-		self.loadJson = function (url, callbackFunction, asynchronous, requestMethod, postData) {
-			return self.callForAchilleus(url, callbackFunction, asynchronous, requestMethod, postData, 'JSON');
-		};
-
 		/**
 		 * loads data and executed callback function via Ajax
 		 *
