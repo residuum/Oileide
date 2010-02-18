@@ -105,7 +105,7 @@
 						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
 							if (isHtml === true) {
 								// if (X)HTML as XML or string
-								bodyContent = (xmlHttp.responseXML !== null) ? (xmlHttp.responseXML.getElementsByTagName('body')[0] : self.getBodyFromHtml(xmlHttp.responseText);							
+								bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0] || self.getBodyFromHtml(xmlHttp.responseText);				
 							} else {
 								bodyContent = xmlHttp.responseXML;
 							}
@@ -119,7 +119,7 @@
 					if (xmlHttp.status === 200 || xmlHttp.status === 304) {
 						if (isHtml === true) {
 							// if (X)HTML as XML or string
-							bodyContent = (xmlHttp.responseXML !== null) ? (xmlHttp.responseXML.getElementsByTagName('body')[0]: self.getBodyFromHtml(xmlHttp.responseText);
+							bodyContent = xmlHttp.responseXML.getElementsByTagName('body')[0] || self.getBodyFromHtml(xmlHttp.responseText);
 						} else {
 							bodyContent = xmlHttp.responseXML;
 						}
