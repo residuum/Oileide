@@ -384,7 +384,7 @@
 		};
 
 		/**
-		 * append oleide to DOM element
+		 * appends window.oileide.autoInsert to anchor elements of DOM element
 		 *
 		 * @param {object} node DOM node to parse for anchor elements
 		 * */
@@ -437,13 +437,13 @@
 		/**
 		 * appends string to browser location hash
 		 *
-		 * @param {string} anchorToAppend string to append to location hash
+		 * @param {string} stringToAppend string to append to location hash
 		 * */
-		self.appendToLocation = function (anchorToAppend) {
+		self.appendToLocation = function (stringToAppend) {
 			if (window.location.hash === '') {
-				window.location.hash = anchorToAppend;
+				window.location.hash = stringToAppend;
 			} else {
-				window.location.hash += ',' + anchorToAppend;
+				window.location.hash += ',' + stringToAppend;
 			}
 		};
 
