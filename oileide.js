@@ -28,13 +28,12 @@
 (function () {
 	var oileide = function () {
 		// Configurables
-		var loadingImageFileName = 'loading.gif',
-			oileideAutoMode = /(^|\/)oileide\.js\?auto$/,
+		var loadingImageFileName = 'loading.gif', // path to loading gif
+			oileideFileNameRegex = /(^|\/)oileide\.js\?auto$/, // regex for automode src
+			autoRegex = /^oileide\[([a-zA-Z 0-9\-_]*)\]$/, // regex for rel attribute
 		// End Configurables
 			self = {},
-			timeout = 200, // For Demo only
 			autoMode = false,
-			autoRegex = /^oileide\[([a-zA-Z 0-9\-_]*)\]$/, // regex for rel attribute
 			cassandrasVeil = null;
 
 		/**
@@ -67,19 +66,19 @@
 		/**
 		 * loads data and executed callback function via Ajax
 		 *
+		 * @param {string} dataType type of data to load via Ajax and hand over to callback function, either JSON, XML or HTML
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} callBackFunction function to execute after html is loaded
 		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
-		 * @param {string} dataType type of data to load via Ajax and hand over to callback function, either JSON, XML or HTML
-		 * @param {string} elementId ID of DOM element to give to callback function along with the return data of the Ajax request in case of HTML, defaults to null
+		 * @param {object} additionalParams additional parameters for callback function
 		 *
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.callForAchilleus = function (url, callbackFunction, asynchronous, requestMethod, postData, dataType, elementId) {
-			if (dataType !== 'JSON' && dataType !== 'XML' && dataType !== 'HTML') {
+		self.callForAchilleus = function (dataType, url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
+			if (dataType !== 'JSON' && dataType !== 'XML' && dataType !== 'HTML' && dataType !== 'Text') {
 				throw ('Unsupported Data Type');
 			}
 			if (asynchronous === undefined) {
@@ -91,29 +90,27 @@
 			if (postData === undefined) {
 				postData = null;
 			}
-			if (elementId === undefined) {
-				elementId = null;
-			}
 			var xmlHttp = self.sail(),
-				bodyContent; // DOM node
+				responseContent;
 			if (xmlHttp !== null) {
 				if (asynchronous === true) {
 					xmlHttp.onreadystatechange = function () {
 						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
 							switch (dataType) {
 							case 'HTML':
-								bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
-								callbackFunction(elementId, bodyContent);
+								responseContent = self.getBodyFromHtml(xmlHttp.responseText);
 								break;
 							case 'XML':
-								bodyContent = xmlHttp.responseXML;
-								callbackFunction(bodyContent);
+								responseContent = xmlHttp.responseXML;
 								break;
 							case 'JSON':
-								bodyContent = xmlHttp.responseText;
-								callbackFunction(bodyContent);
+								responseContent = xmlHttp.responseText;
+								break;
+							case 'Text':
+								responseContent = xmlHttp.responseText;
 								break;
 							}
+							callbackFunction(responseContent, additionalParams);
 						}
 					};
 				}
@@ -123,19 +120,19 @@
 					if (xmlHttp.status === 200 || xmlHttp.status === 304) {
 						switch (dataType) {
 						case 'HTML':
-							// if (X)HTML as XML or string
-							bodyContent = self.getBodyFromHtml(xmlHttp.responseText);
-							callbackFunction(elementId, bodyContent);
+							responseContent = self.getBodyFromHtml(xmlHttp.responseText);
 							break;
 						case 'XML':
-							bodyContent = xmlHttp.responseXML;
-							callbackFunction(bodyContent);
+							responseContent = xmlHttp.responseXML;
 							break;
 						case 'JSON':
-							bodyContent = xmlHttp.responseText;
-							callbackFunction(bodyContent);
+							responseContent = xmlHttp.responseText;
+							break;
+						case 'Text':
+							responseContent = xmlHttp.responseText;
 							break;
 						}
+						callbackFunction(responseContent, additionalParams);
 						return true;
 					} else {
 						return false;
@@ -156,12 +153,30 @@
 		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
+		 * @param {object} additonalParams additionalParameters for callback function
 		 *
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadJson = function (url, callbackFunction, asynchronous, requestMethod, postData) {
-			return self.callForAchilleus(url, callbackFunction, asynchronous, requestMethod, postData, 'JSON');
+		self.loadJson = function (url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
+			return self.callForAchilleus('JSON', url, callbackFunction, asynchronous, requestMethod, postData, additionalParams);
+		};
+
+		/**
+		 * loads text and executed callback function via Ajax
+		 *
+		 * @param {string} url URL to load via ajax request
+		 * @param {string} callBackFunction function to execute after html is loaded
+		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
+		 * @param {string} postData postData to send via Ajax, defaults to null
+		 * @param {object} additonalParams additionalParameters for callback function
+		 *
+		 * @return status for successful loading
+		 * @type boolean
+		 * */
+		self.loadText = function (url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
+			return self.callForAchilleus('Text', url, callbackFunction, asynchronous, requestMethod, postData, additionalParams);
 		};
 
 		/**
@@ -172,12 +187,13 @@
 		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
+		 * @param {object} additonalParams additionalParameters for callback function
 		 *
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadXml = function (url, callbackFunction, asynchronous, requestMethod, postData) {
-			return self.callForAchilleus(url, callbackFunction, asynchronous, requestMethod, postData, 'XML');
+		self.loadXml = function (url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
+			return self.callForAchilleus( 'XML', url, callbackFunction, asynchronous, requestMethod, postData);
 		};
 
 		/**
@@ -188,13 +204,13 @@
 		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
-		 * @param {string} elementId ID of DOM element to give to callback function along with the return data of the Ajax request, defaults to null
+		 * @param {object} additonalParams additionalParameters for callback function
 		 *
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadHtml = function (url, callbackFunction, asynchronous, requestMethod, postData, elementId) {
-			return self.callForAchilleus(url, callbackFunction, asynchronous, requestMethod, postData, 'HTML', elementId);
+		self.loadHtml = function (url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
+			return self.callForAchilleus('HTML', url, callbackFunction, asynchronous, requestMethod, postData, additionalParams);
 		};
 
 		/**
@@ -222,10 +238,10 @@
 		/**
 		 * writes HTML into a DOM element
 		 *
-		 * @param {string} elementId ID of the DOM element to write to
 		 * @param {object} content DOM element to put into element with ID elementId
+		 * @param {string} elementId ID of the DOM element to write to
 		 * */
-		self.writeHtml = function (elementId, content) {
+		self.writeHtml = function (content, elementId) {
 			var element = document.getElementById(elementId),
 				currentNodes,
 				currentNode,
@@ -442,11 +458,7 @@
 			for (i = 0, len = clickedLinkIds.length; i < len; i += 1) {
 				aElement = document.getElementById(clickedLinkIds[i]);
 				if (aElement !== null) {
-					/*if (timeout !== undefined && timeout > 0) {
-						window.setTimeout(self.autoInsert(aElement, false), timeout);
-					} else {*/
 					self.autoInsert(aElement, false);
-					//}
 				}
 			}
 		};
@@ -475,7 +487,7 @@
 		};
 
 		/**
-		 * try to find auto mode switch in sourcecode
+		 * try to find auto mode switch in HTML source
 		 * */
 		self.getParam = function () {
 			var scriptTags = document.getElementsByTagName("head")[0].getElementsByTagName("script"),
@@ -484,7 +496,7 @@
 				len;
 			for (i = 0, len = scriptTags.length; i < len; i += 1) {
 				path = scriptTags[i].src;
-				if (path.match(oileideAutoMode)) {
+				if (path.match(oileideFileNameRegex)) {
 					self.run();
 				}
 			}
