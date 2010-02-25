@@ -69,7 +69,7 @@
 		 * @param {string} dataType type of data to load via Ajax and hand over to callback function, either JSON, XML or HTML
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} callBackFunction function to execute after html is loaded
-		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {boolean} isAsynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {object} additionalParams additional parameters for callback function
@@ -77,12 +77,12 @@
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.callForAchilleus = function (dataType, url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
+		self.callForAchilleus = function (dataType, url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams) {
 			if (dataType !== 'JSON' && dataType !== 'XML' && dataType !== 'HTML' && dataType !== 'Text') {
 				throw ('Unsupported Data Type');
 			}
-			if (asynchronous === undefined) {
-				asynchronous = true;
+			if (isAsynchronous === undefined) {
+				isAsynchronous = true;
 			}
 			if (requestMethod === undefined) {
 				requestMethod = 'GET';
@@ -93,7 +93,7 @@
 			var xmlHttp = self.sail(),
 				responseContent;
 			if (xmlHttp !== null) {
-				if (asynchronous === true) {
+				if (isAsynchronous === true) {
 					xmlHttp.onreadystatechange = function () {
 						if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 304)) {
 							switch (dataType) {
@@ -114,9 +114,9 @@
 						}
 					};
 				}
-				xmlHttp.open(requestMethod, url, asynchronous);
+				xmlHttp.open(requestMethod, url, isAsynchronous);
 				xmlHttp.send(postData);
-				if (asynchronous === false) {
+				if (isAsynchronous === false) {
 					if (xmlHttp.status === 200 || xmlHttp.status === 304) {
 						switch (dataType) {
 						case 'HTML':
@@ -150,7 +150,7 @@
 		 *
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} callBackFunction function to execute after html is loaded
-		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {boolean} isAsynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {object} additonalParams additionalParameters for callback function
@@ -158,8 +158,8 @@
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadJson = function (url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
-			return self.callForAchilleus('JSON', url, callbackFunction, asynchronous, requestMethod, postData, additionalParams);
+		self.loadJson = function (url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams) {
+			return self.callForAchilleus('JSON', url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams);
 		};
 
 		/**
@@ -167,7 +167,7 @@
 		 *
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} callBackFunction function to execute after html is loaded
-		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {boolean} isAsynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {object} additonalParams additionalParameters for callback function
@@ -175,8 +175,8 @@
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadText = function (url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
-			return self.callForAchilleus('Text', url, callbackFunction, asynchronous, requestMethod, postData, additionalParams);
+		self.loadText = function (url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams) {
+			return self.callForAchilleus('Text', url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams);
 		};
 
 		/**
@@ -184,7 +184,7 @@
 		 *
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} callBackFunction function to execute after html is loaded
-		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {boolean} isAsynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {object} additonalParams additionalParameters for callback function
@@ -192,8 +192,8 @@
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadXml = function (url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
-			return self.callForAchilleus( 'XML', url, callbackFunction, asynchronous, requestMethod, postData);
+		self.loadXml = function (url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams) {
+			return self.callForAchilleus( 'XML', url, callbackFunction, isAsynchronous, requestMethod, postData);
 		};
 
 		/**
@@ -201,7 +201,7 @@
 		 *
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} callBackFunction function to execute after html is loaded
-		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {boolean} isAsynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {object} additonalParams additionalParameters for callback function
@@ -209,8 +209,8 @@
 		 * @return status for successful loading
 		 * @type boolean
 		 * */
-		self.loadHtml = function (url, callbackFunction, asynchronous, requestMethod, postData, additionalParams) {
-			return self.callForAchilleus('HTML', url, callbackFunction, asynchronous, requestMethod, postData, additionalParams);
+		self.loadHtml = function (url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams) {
+			return self.callForAchilleus('HTML', url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams);
 		};
 
 		/**
@@ -276,7 +276,8 @@
 		 *
 		 * @param {string} url URL to load via ajax request
 		 * @param {string} elementId ID of DOM element to give to callback function along with the return data of the Ajax request, defaults to null
-		 * @param {boolean} asynchronous indicates whether the call is asynchronous, defaults to true
+		 * @param {boolean} veilShown indicates whether to show the overlay over the element
+		 * @param {boolean} isAsynchronous indicates whether the call is asynchronous, defaults to true
 		 * @param {string} requestMethod how to call the URL, defaults to 'GET'
 		 * @param {string} postData postData to send via Ajax, defaults to null
 		 * @param {string} callBackFunction function to execute after html is loaded
@@ -284,8 +285,11 @@
 		 * @return status of successfully loaded HTML
 		 * @type boolean
 		 * */
-		self.insertHtml = function (url, elementId, asynchronous, requestMethod, postData) {
-			return self.loadHtml(url, self.writeHtml, asynchronous, requestMethod, postData, elementId);
+		self.insertHtml = function (url, elementId, veilShown, isAsynchronous, requestMethod, postData) {
+			if (veilShown === true) {
+				self.showVeil(elementId);
+			}
+			return self.loadHtml(url, self.writeHtml, isAsynchronous, requestMethod, postData, elementId);
 		};
 
 		/**
@@ -304,8 +308,7 @@
 				elementId = matches[1],
 				status = false;
 
-			self.showVeil(elementId);
-			status = self.insertHtml(url, elementId, appendToLocation);
+			status = self.insertHtml(url, elementId, true);
 			if (appendToLocation === true && stringToAppend) {
 				self.appendToLocation(stringToAppend);
 			}
