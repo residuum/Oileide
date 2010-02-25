@@ -103,7 +103,7 @@
 							case 'XML':
 								responseContent = xmlHttp.responseXML;
 								break;
-							case 'JSON':
+							case 'JSON': // actually the same as Text
 								responseContent = xmlHttp.responseText;
 								break;
 							case 'Text':
@@ -125,7 +125,7 @@
 						case 'XML':
 							responseContent = xmlHttp.responseXML;
 							break;
-						case 'JSON':
+						case 'JSON': // actually the same as Text
 							responseContent = xmlHttp.responseText;
 							break;
 						case 'Text':
@@ -138,10 +138,10 @@
 						return false;
 					}
 				} else {
-					return true;
+					return true; // No information because of asynchronous call, assume success
 				}
 			} else {
-				return false;
+				return false; // No XmlHttpRequest available
 			}
 		};
 
@@ -193,7 +193,7 @@
 		 * @type boolean
 		 * */
 		self.loadXml = function (url, callbackFunction, isAsynchronous, requestMethod, postData, additionalParams) {
-			return self.callForAchilleus( 'XML', url, callbackFunction, isAsynchronous, requestMethod, postData);
+			return self.callForAchilleus('XML', url, callbackFunction, isAsynchronous, requestMethod, postData);
 		};
 
 		/**
@@ -224,12 +224,14 @@
 			var tempDomEl,
 				start,
 				end;
+			// Workaround for real DOM pt. 1:
 			// get everything between <body ...> and </body>
 			start = htmlString.indexOf("<body");
 			start = htmlString.indexOf(">", start);
 			end = htmlString.lastIndexOf("</body>");
 			htmlString = htmlString.slice(start + 1, end);
-			// Workaround for real DOM: Create div and use innerHTML
+			// Workaround for real DOM pt. 2:
+			// Create div and use innerHTML
 			tempDomEl = document.createElement('div');
 			tempDomEl.innerHTML = htmlString;
 			return tempDomEl;
@@ -454,6 +456,7 @@
 		 * reads hash from browser location and executes the indicated ajax requests synchronous
 		 * */
 		self.readFromLocation = function () {
+			// window.location.hash still contains the # on getting (not on setting)
 			var clickedLinkIds = window.location.hash.substr(1).split(','),
 				i,
 				aElement,
@@ -512,15 +515,15 @@
 	/**
 	 * Add parameter search to onload
 	 * */
-	if (window.addEventListener) {
+	if (window.addEventListener) { // DOM method
 		window.addEventListener('load', function () {
 			window.oileide.getParam();
 		}, false);
-	} else if (window.attachEvent) {
+	} else if (window.attachEvent) { // IE
 		window.attachEvent('onload', function () {
 			window.oileide.getParam();
 		});
-	} else if (typeof window.onload === 'undefined') {
+	} else if (typeof window.onload === 'undefined') { // older browsers
 		window.onload = function () {
 			window.oileide.getParam();
 		};
