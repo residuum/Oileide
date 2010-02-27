@@ -299,18 +299,19 @@
 		 *
 		 * @param {object} aElement anchor element which was clicked
 		 * @param {boolean} appendToLocation indicates whether to add element ID to hash
+		 * @param {boolean} isAsynchronous indicates whether the call isAsynchronous
 		 *
 		 * @return status of successfully inserted href
 		 * @type boolean
 		 * */
-		self.autoInsert = function (aElement, appendToLocation) {
+		self.autoInsert = function (aElement, appendToLocation, isAsynchronous) {
 			var url = aElement.getAttribute('href'),
 				stringToAppend = aElement.getAttribute('id'),
 				matches = autoRegex.exec(aElement.getAttribute('rel')),
 				elementId = matches[1],
 				status = false;
 
-			status = self.insertHtml(url, elementId, true);
+			status = self.insertHtml(url, elementId, true, isAsynchronous);
 			if (appendToLocation === true && stringToAppend) {
 				self.appendToLocation(stringToAppend);
 			}
@@ -400,7 +401,7 @@
 			for (i = 0, len = aElements.length; i < len; i += 1) {
 				if (autoRegex.test(aElements[i].rel)) {
 					aElements[i].onclick = function () {
-						var status = window.oileide.autoInsert(this, true);
+						var status = window.oileide.autoInsert(this, true, true);
 						if (status === true) {
 							return false;
 						} else {
@@ -464,7 +465,7 @@
 			for (i = 0, len = clickedLinkIds.length; i < len; i += 1) {
 				aElement = document.getElementById(clickedLinkIds[i]);
 				if (aElement !== null) {
-					self.autoInsert(aElement, false);
+					self.autoInsert(aElement, false, false);
 				}
 			}
 		};
