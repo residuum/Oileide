@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------------
-	Oileide v 0.1-alpha
+	Oileide v 0.1
 	by Thomas Mayer - http://ix.residuum.org/oileide/oileide.html
 	License: MIT license, i.e. more or less: Do As Thou Wilst (with the code) Shall
 	Be The Whole of The Law.
@@ -29,7 +29,7 @@
 	var oileide = function () {
 		// Configurables
 		var loadingImageFileName = 'loading.gif', // path to loading gif
-			oileideFileNameRegex = /(^|\/)oileide\.js\?auto$/, // regex for automode src
+			oileideFileNameRegex = /(^|\/)oileide.*\.js\?auto$/, // regex for automode src
 			autoRegex = /^oileide\[([a-zA-Z 0-9\-_]*)\]$/, // regex for rel attribute
 		// End Configurables
 			self = {},
