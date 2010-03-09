@@ -8,10 +8,8 @@
 	<body>
 		<p>
 			<div class="olympic new"><a href="demo.html">back</a></div>
-			Look, what we have here?
+			Content of demo1.xml
 		</p>
-		<div id="newest">Another content to overwrite by clicking link_3</div>
-		<a id="a3" href="demo3.html" rel="oileide[newest]">link_3</a>
 		<div class="olympic new"><a href="demo.html">back</a></div>
 	</body>
 </html>

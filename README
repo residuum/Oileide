@@ -49,18 +49,21 @@ How Auto Mode Works
       and load the body content of test.html into the <p> with
       id="my-content"
 
+  For a demo compare http://ix.residuum.org/oileide/demo.html and
+  http://ix.residuum.org/oileide/demo.html#a1,a3 with two clicked anchors.
+
 - Should you load the page with anchors in auto mode, all AJAX requests
   will be made in the same sequence as indicated via the location, although
   for reasons stated in the "even more better" functions synchronously.
 
 - But there's even more:
-  * Automatic loading indicator: The element that will hold the ajaxified 
-    content will be overlayed by a div and a loading gif to indicate the 
+  * Automatic loading indicator: The element that will hold the ajaxified
+    content will be overlayed by a div and a loading gif to indicate the
     load in the background.
-  * Graceful degradation: Any element with the class "olympic" on the 
-    loaded HTML file (in the example test.html) will be removed before 
+  * Graceful degradation: Any element with the class "olympic" on the
+    loaded HTML file (in the example test.html) will be removed before
     inserting the content on the original page, so you can include header /
-    footer for navigation and overall look and feel on the page for the 
+    footer for navigation and overall look and feel on the page for the
     non-Javascript browsers and still load the same page via AJAX.
   * Content that is loaded via auto mode will be parsed automatically
     for <a> tags with the right markup to ajaxify them as well. That is
