@@ -53,17 +53,17 @@ How Auto Mode Works
 
 - Should you load the page with anchors in auto mode, all AJAX requests
   will be made in the same sequence as indicated via the location, although
-  for reasons stated in the "even more better" functions synchronous.
+  for reasons stated in the "even more better" functions synchronously.
 
 - But there's even more:
-  * the element that will hold the ajaxified content will
-    be overlayed by a div and a loading gif to indicate the load in the
-    background.
-  * Any element with the class "olympic" on the loaded HTML file (in the
-    example test.html) will not be displayed on the original page, so
-    you can include header / footer for navigation and overall look and
-    feel on the page for the non-Javascript browsers and still load the
-    same page via AJAX. Graceful degradation ain't sh*t to Oileide.
+  * Automatic loading indicator: The element that will hold the ajaxified 
+    content will be overlayed by a div and a loading gif to indicate the 
+    load in the background.
+  * Graceful degradation: Any element with the class "olympic" on the 
+    loaded HTML file (in the example test.html) will be removed before 
+    inserting the content on the original page, so you can include header /
+    footer for navigation and overall look and feel on the page for the 
+    non-Javascript browsers and still load the same page via AJAX.
   * Content that is loaded via auto mode will be parsed automatically
     for <a> tags with the right markup to ajaxify them as well. That is
     the reason to make the calls after reload synchronous, to be sure that
