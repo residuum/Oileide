@@ -17,14 +17,13 @@ Oileide is a small AJAX library with the following features:
   of the browser to store this information.
 
 - All the rest is standard for AJAX libraries: Get HTML/XML/JSON via
-  synchronous / asynchronous requests and doing callback functions,
-  although not everything is implemented yet.
+  synchronous / asynchronous requests and doing callback functions.
 
-- One main goal is to be a small library.
+- Oileide is small.
 
 How Auto Mode Works
 
-- reference the file in the <head> of the (X)HTML document via
+- Reference the file in the <head> of the (X)HTML document via
   <script src="oileide.js?auto"></script> to trigger auto mode or
   include onload="window.oileide.run()" in the body tag, in case of
   renaming the file.
@@ -37,8 +36,7 @@ How Auto Mode Works
         after the hash (#), in case of more than one clicked link, the
         IDs will be in a comma separated list. If you do not set an
         id, then nothing will be appended to the browser location.
-  * href: The link to the site to be loaded via AJAX. Only GET method
-          is implemented, any ideas on how to implement POST are welcome
+  * href: The link to the site to be loaded via AJAX with GET.
   * rel: This is the trigger, and is used in the form
          rel="oileide[elementId]", where elementId is the ID of the
          element whose content will be replaced by the AJAX content.
