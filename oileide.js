@@ -363,8 +363,7 @@
 					}
 					curleft += element.offsetLeft;
 					curtop += element.offsetTop;
-					element = element.offsetParent;
-				} while (element);
+				} while ((element = element.offsetParent));
 			}
 			curleft += 'px';
 			curtop += 'px';
