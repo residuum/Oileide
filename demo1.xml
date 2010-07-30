@@ -6,10 +6,8 @@
 		<meta name="description" content="Oileide: Ajax, the lesser with an auto-bookmarking twist" />
 	</head>
 	<body>
-		<p>
-			<div class="olympic new"><a href="demo.html">back</a></div>
-			Content of demo1.xml
-		</p>
+		<div class="olympic new"><a href="demo.html">back</a></div>
+		Nothing to see here, move on.
 		<div class="olympic new"><a href="demo.html">back</a></div>
 	</body>
 </html>
