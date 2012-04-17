@@ -496,7 +496,7 @@
 		 * try to find auto mode switch in HTML source
 		 * */
 		self.getParam = function () {
-			var scriptTags = document.getElementsByTagName("head")[0].getElementsByTagName("script"),
+			var scriptTags = document.getElementsByTagName("script"),
 				i,
 				path,
 				len;
@@ -532,4 +532,4 @@
 			window.oileide.getParam();
 		};
 	}
-}());
+})();
