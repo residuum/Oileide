@@ -7,7 +7,8 @@
 		<style>
 		#tested {position: relative;}
 		</style>
-		<script src="oileide.min.0.1.js?auto"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+		<script src="jquery.oileide.js"></script>
 	<link rel="stylesheet" href="oileide.css" type="text/css" media="screen" />
 	</head>
 	<body>
@@ -26,12 +27,17 @@
 		<div id="tested" style="border: solid 1px; min-height: 100px; min-width: 150px;">
 			Oh my goddess! All bad stuff will appear here. Please, do not click. Or do click. Or do not click. I am not sure.
 		</div>
-		<a href="demo1.html" rel="oileide[test]" id="a1">Click to see a female warrior.</a>
-		<a href="demo2.html" rel="oileide[tested]" id="a2">Click to see really bad stuff happening.</a>
+		<a href="demo1.html" data-oileide-target="#test" id="a1">Click to see a female warrior.</a>
+		<a href="demo2.html" data-oileide-target="#tested" data-oileide-append="true" id="a2">Click to see really bad stuff happening.</a>
 		<p>
 			All images are from Wikimedia Commons and are photographs of pottery in the Staatliche Antikensammlung M&uuml;chen.
 			<br />
 			If you are in Munich, and have time to spare, go there and look at the fabulous exhibition, on Sundays entry fee is only 1&euro;.
 		</p>
+		<script>
+$(function(){
+		$.fn.oileide.run();
+});
+		</script>
 	</body>
 </html>
